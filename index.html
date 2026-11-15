@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quiz Geração Tech 4.0</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Poppins:wght@400;500;600;700&display=swap">
+<style>
+:root{--navy:#0a1252;--navy2:#141f78;--deep:#070d3a;--royal:#4373e0;--mint:#8ff0d6;--ink:#eef2ff;--muted:#a9b6ea;--ok:#3ee6a8;--bad:#ff5c8a;--gold:#ffd25e;--line:#2c3a94;color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:500 16px/1.45 Poppins,system-ui,sans-serif;min-height:100vh;background:radial-gradient(ellipse at 50% -10%,#2a55d6 0,transparent 55%),linear-gradient(var(--navy),var(--deep));background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;background:linear-gradient(rgba(143,240,214,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(143,240,214,.07) 1px,transparent 1px);background-size:36px 36px;pointer-events:none}
+main,.brand div{max-width:560px;margin:0 auto;position:relative}
+main{padding:14px 16px 40px}
+.brand{padding:12px 16px 0;position:relative}
+.brand div{display:flex;justify-content:space-between;align-items:center}
+.brand b{font:700 17px Poppins,sans-serif;letter-spacing:-.02em}
+.brand small{color:var(--mint);margin-left:3px}
+#snd{background:var(--navy2);border:2px solid var(--line);color:var(--ink);border-radius:12px;font-size:18px;padding:4px 10px;cursor:pointer}
+h1,h2,.d{font-family:Bungee,Poppins,sans-serif;font-weight:400;margin:0}
+p{margin:0}.hidden{display:none!important}.stack>*+*{margin-top:16px}.muted{color:var(--muted)}.note{font-size:14px;color:var(--muted)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.logo{font:400 clamp(52px,17vw,84px)/.95 Bungee,sans-serif;color:var(--mint);text-shadow:0 5px 0 #2f5fc4,0 10px 0 #1b2f8f,0 14px 24px rgba(0,0,0,.4);margin:18px 0 10px;transform:rotate(-2deg)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips span,.tag{background:var(--navy2);border:2px solid var(--line);border-radius:99px;padding:3px 12px;font-size:14px;font-weight:600}
+input{width:100%;font:600 18px Poppins,sans-serif;padding:14px 16px;border-radius:16px;border:3px solid var(--line);background:var(--deep);color:var(--ink)}
+.btn{display:block;width:100%;font:400 20px Bungee,sans-serif;letter-spacing:.02em;padding:15px;border:0;border-radius:18px;background:var(--mint);color:#0a1252;box-shadow:0 6px 0 #3fb99a;cursor:pointer;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(5px);box-shadow:0 1px 0 #3fb99a}
+.btn.ghost{background:var(--navy2);color:var(--ink);box-shadow:0 6px 0 var(--deep);border:2px solid var(--line);font-size:16px;margin-top:14px}
+.btn.pulse{animation:pulse 1.4s infinite}
+@keyframes pulse{50%{transform:scale(1.03)}}
+.hud{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.hud .d{font-size:15px;color:var(--mint)}
+#score{font:400 28px Bungee,sans-serif;color:var(--gold);text-shadow:0 3px 0 #8a6a10}
+#combo{font:700 15px Poppins;color:#0a1252;background:var(--gold);border-radius:99px;padding:2px 12px;min-height:26px}
+#seg{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}
+#seg i{height:10px;border-radius:6px;background:var(--line)}
+#seg i.cur{background:var(--mint);animation:pulse 1s infinite}#seg i.ok{background:var(--ok)}#seg i.bad{background:var(--bad)}
+.mid{display:flex;align-items:center;justify-content:space-between}
+.timer{position:relative;width:64px;height:64px}
+.timer svg{width:100%;height:100%;transform:rotate(-90deg)}
+.timer circle{fill:none;stroke-width:6}.trk{stroke:var(--line)}
+.rg{stroke:var(--mint);stroke-linecap:round;stroke-dasharray:163.4;transition:stroke-dashoffset .1s linear}
+.timer.low .rg{stroke:var(--bad)}.timer.low b{color:var(--bad)}
+.timer b{position:absolute;inset:0;display:grid;place-items:center;font:400 22px Bungee,sans-serif}
+.q{background:linear-gradient(160deg,#4a7be8,#2a55d6);border-radius:26px;padding:20px 22px;font:700 clamp(19px,5.3vw,25px)/1.3 Poppins,sans-serif;box-shadow:0 7px 0 #1b2f8f,0 16px 30px rgba(0,0,0,.3);margin:0}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-9px)}75%{transform:translateX(9px)}}
+.opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;font:600 17px Poppins,sans-serif;color:var(--ink);background:var(--navy2);border:3px solid var(--line);border-radius:18px;padding:11px 14px;margin-top:11px;box-shadow:0 5px 0 var(--deep);cursor:pointer;transition:transform .08s,box-shadow .08s}
+.opt:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--deep)}
+.opt b{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font:400 17px Bungee;color:#0a1252;background:#6aa0ff}
+.opt:nth-child(1) b{background:var(--bad)}.opt:nth-child(2) b{background:var(--gold)}.opt:nth-child(3) b{background:var(--ok)}
+.opt:hover:not(:disabled){border-color:var(--mint)}
+.opt.ok{background:#0e5a4a;border-color:var(--ok);animation:pop .35s}
+.opt.bad{background:#5a1740;border-color:var(--bad)}
+.opt.off{opacity:.25}
+.opt:disabled{cursor:default}
+@keyframes pop{50%{transform:scale(1.04)}}
+.pw{display:flex;gap:10px}
+.pw button{flex:1;font:600 14px Poppins;padding:9px;border-radius:14px;border:2px dashed var(--mint);background:transparent;color:var(--mint);cursor:pointer}
+.pw button:disabled{opacity:.35;border-style:solid;cursor:default}
+.fb{padding:14px 16px;border-radius:18px;background:var(--deep);border:3px solid var(--line)}
+.fb strong{display:block;font:400 18px Bungee}
+.fb.ok{border-color:var(--ok)}.fb.ok strong{color:var(--ok)}.fb.bad{border-color:var(--bad)}.fb.bad strong{color:var(--bad)}
+#stars{font-size:48px;color:var(--gold);letter-spacing:6px;text-align:center}
+#rank{font-size:clamp(26px,8vw,38px);text-align:center;color:var(--mint)}
+#final{font:400 76px/1 Bungee;color:var(--gold);text-align:center;text-shadow:0 5px 0 #8a6a10}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center;font-size:13px}
+.stats div{background:var(--navy2);border:2px solid var(--line);border-radius:16px;padding:10px 4px}
+.stats b{display:block;font:400 24px Bungee;color:var(--mint)}
+.row{display:flex;gap:12px;align-items:center;padding:10px 14px;background:var(--navy2);border:2px solid var(--line);border-radius:16px;margin-top:8px}
+.row.me{border-color:var(--gold);background:#1c2a8c}
+.pos{flex:none;width:34px;font:400 18px Bungee}.nm{flex:1;overflow-wrap:anywhere;font-weight:600}.pt{font:400 18px Bungee;color:var(--gold)}
+.row button{border:0;background:none;color:var(--bad);font-size:22px;cursor:pointer}
+#cd{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:rgba(7,13,58,.88);font:400 clamp(90px,30vw,160px) Bungee;color:var(--mint)}
+#cd.pop{animation:cd .75s}@keyframes cd{0%{transform:scale(2.2);opacity:0}30%{transform:scale(1);opacity:1}}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+#fx s{position:fixed;width:9px;height:9px;border-radius:2px;animation:bst .7s forwards}
+@keyframes bst{to{transform:translate(var(--dx),var(--dy)) rotate(260deg);opacity:0}}
+#fx em{position:fixed;font:400 26px Bungee;font-style:normal;color:var(--gold);text-shadow:0 3px 0 #8a6a10;transform:translateX(-50%);animation:fl 1s forwards}
+@keyframes fl{to{transform:translate(-50%,-70px);opacity:0}}
+@media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="brand"><div><b>Geração Tech<small>4.0</small></b><button id="snd" aria-label="Som">🔊</button></div></header>
+<main>
+  <section id="start" class="stack">
+    <div class="logo">QUIZ<br>TECH</div>
+    <p class="muted">Enfrente 10 fases de tecnologia, ganhe combos e suba no ranking. Cada fase vale até 150 pontos, e acertar em sequência multiplica o resultado.</p>
+    <div class="chips"><span>🌐 Geral</span><span>💻 Full Stack</span><span>🤖 IA Generativa</span><span>🚀 Full Cycle</span></div>
+    <input id="nick" maxlength="20" placeholder="Seu apelido de jogador" autocomplete="nickname">
+    <button class="btn pulse" id="go">JOGAR</button>
+    <button class="btn ghost" id="rk1">🏆 Ver ranking</button>
+    <p class="note" id="best"></p>
+  </section>
+
+  <section id="game" class="stack hidden">
+    <div class="hud"><span class="d" id="prog"></span><span id="combo"></span><span id="score"></span></div>
+    <div id="seg"></div>
+    <div class="mid"><span class="tag" id="cat"></span>
+      <div class="timer" id="tm"><svg viewBox="0 0 60 60"><circle class="trk" cx="30" cy="30" r="26"/><circle class="rg" id="ring" cx="30" cy="30" r="26"/></svg><b id="tnum"></b></div></div>
+    <h2 class="q" id="q"></h2>
+    <div id="opts"></div>
+    <div class="pw"><button id="p50">✂️ 50/50</button><button id="pT">⏱️ +10 s</button></div>
+    <div class="fb hidden" id="fb"></div>
+    <button class="btn hidden" id="next">PRÓXIMA</button>
+  </section>
+
+  <section id="end" class="stack hidden">
+    <div id="stars"></div>
+    <h2 id="rank"></h2>
+    <div id="final"></div>
+    <div class="stats">
+      <div><b id="hits"></b>acertos</div>
+      <div><b id="streak"></b>maior combo</div>
+      <div><b id="record"></b>seu recorde</div>
+    </div>
+    <p class="note" id="saved"></p>
+    <button class="btn" id="rk2">🏆 Ver ranking</button>
+    <button class="btn ghost" id="again">Jogar de novo</button>
+  </section>
+
+  <section id="board" class="hidden">
+    <h2 style="font-size:32px;color:var(--mint)">Ranking</h2>
+    <p class="note" id="bnote" style="margin-top:8px">Carregando...</p>
+    <div id="list"></div>
+    <button class="btn ghost" id="back">Voltar</button>
+  </section>
+</main>
+<div id="cd" class="hidden"></div>
+<div id="fx"></div>
+<script>
+const Q=[
+["Geral","O que significa a sigla HTTP?","HyperText Transfer Protocol","High Transfer Text Protocol","Hyper Terminal Tracking Protocol","Home Tool Transfer Protocol","Protocolo de troca de páginas entre navegador e servidor."],
+["Geral","Quantos bits há em um byte?","8","4","16","10","1 byte = 8 bits."],
+["Geral","O que é phishing?","Golpe que engana a pessoa para roubar dados","Um tipo de antivírus","Um protocolo de e-mail","Um processador","Chega por e-mail, SMS ou links falsos."],
+["Geral","O que diferencia um SSD de um HD?","Não tem partes móveis e usa memória flash","Usa discos giratórios","Só funciona online","Guarda só texto","Por isso é mais rápido e resistente."],
+["Geral","O cadeado do navegador (HTTPS) indica que...","A conexão é criptografada","O site é 100% confiável","O site é do governo","Não há anúncios","Protege o trânsito, não garante honestidade."],
+["Geral","Para que serve um firewall?","Filtrar o tráfego de rede","Aumentar a RAM","Editar fotos","Esfriar o processador","Age como porteiro da rede."],
+["Geral","Qual sistema numérico os computadores usam internamente?","Binário","Decimal","Romano","Hexadecimal puro","Circuitos têm dois estados: 0 e 1."],
+["Geral","Qual componente é o “cérebro” do computador?","CPU","Fonte","Cooler","Gabinete","A CPU executa as instruções."],
+["Geral","O 5G é a quinta geração de...","Redes de telefonia móvel","Processadores","Placas de vídeo","Sistemas operacionais","Mais velocidade e menor latência."],
+["Geral","O que é computação em nuvem?","Usar servidores remotos pela internet","Guardar dados em pendrive","Um tipo de monitor","Um antivírus","Processamento e armazenamento em data centers."],
+["Geral","Quem criou a World Wide Web?","Tim Berners-Lee","Linus Torvalds","Alan Turing","Elon Musk","Propôs a web em 1989, no CERN."],
+["Geral","Qual unidade mede a velocidade de clock de um processador?","Gigahertz (GHz)","Watts","Pixels","Decibéis","1 GHz = 1 bilhão de ciclos por segundo."],
+["Full Stack","O que o CSS faz?","Define a aparência da página","Consulta bancos de dados","Compila Java","Cria servidores","Cuida de cores, layout e tipografia."],
+["Full Stack","Qual método HTTP costuma criar um recurso em uma API REST?","POST","GET","HEAD","TRACE","POST envia dados para criar algo novo."],
+["Full Stack","O que significa o status HTTP 404?","Recurso não encontrado","Erro interno do servidor","Acesso proibido","Requisição aceita","O servidor respondeu, mas não achou o recurso."],
+["Full Stack","O que é o DOM?","Representação em árvore da página HTML","Um banco de dados","Um framework CSS","Um servidor web","O JavaScript manipula a página por ele."],
+["Full Stack","Qual destes é um banco de dados NoSQL?","MongoDB","PostgreSQL","MySQL","SQLite","MongoDB guarda documentos em formato JSON."],
+["Full Stack","O que é o React?","Biblioteca JavaScript para interfaces com componentes","Banco de dados","Sistema operacional","Linguagem de servidor","Criada pelo Facebook."],
+["Full Stack","O que é o Node.js?","Ambiente que executa JavaScript no servidor","Um navegador","Um banco relacional","Uma linguagem nova","Usa o motor V8 do Chrome."],
+["Full Stack","Para que serve o Git?","Controle de versão de código","Editar vídeos","Hospedar sites","Criar planilhas","Registra o histórico de mudanças."],
+["Full Stack","Para que serve um JWT?","Transportar dados de autenticação assinados","Compactar imagens","Estilizar páginas","Criar tabelas SQL","É um token assinado, usado em login de APIs."],
+["Full Stack","O que o CORS controla?","Requisições entre origens diferentes no navegador","A velocidade da CPU","O tamanho de imagens","O versionamento","Evita que qualquer site consuma sua API sem permissão."],
+["Full Stack","Qual comando SQL busca dados em uma tabela?","SELECT","INSERT","DROP","ALTER","SELECT consulta; INSERT grava; DROP apaga."],
+["Full Stack","Qual formato é muito usado para trocar dados entre front-end e API?","JSON","BMP","MP3","EXE","Texto leve e legível por humanos e máquinas."],
+["IA Generativa","O que significa LLM?","Large Language Model","Long Logic Machine","Linear Learning Method","Low Latency Memory","Modelo de linguagem treinado com grandes volumes de texto."],
+["IA Generativa","O que é um token em um LLM?","Pedaço de texto processado pelo modelo","Uma senha de acesso","Um tipo de GPU","Um arquivo de imagem","Pode ser uma palavra, parte dela ou símbolo."],
+["IA Generativa","O que é uma alucinação em IA?","Resposta convincente, porém incorreta","Um erro de energia","Uma imagem borrada","Um vírus","O modelo pode inventar fatos com confiança."],
+["IA Generativa","O que é um prompt?","A instrução enviada ao modelo","O resultado final","Um tipo de chip","Um banco de dados","Quanto mais claro, melhor a resposta."],
+["IA Generativa","O que é RAG?","Buscar documentos externos para embasar a resposta","Treinar modelo do zero","Compactar modelos","Gerar vídeos","Retrieval-Augmented Generation reduz alucinações."],
+["IA Generativa","Qual arquitetura sustenta os LLMs modernos?","Transformer","Blockchain","RAID","Monolito","Usa mecanismo de atenção para relacionar palavras."],
+["IA Generativa","O que é um embedding?","Representação numérica do significado de um texto","Um tipo de prompt","Um navegador","Uma linguagem","Textos parecidos ficam próximos no espaço vetorial."],
+["IA Generativa","O que é fine-tuning?","Ajustar um modelo já treinado com dados específicos","Apagar o modelo","Trocar a GPU","Escrever prompts longos","Especializa o modelo para uma tarefa."],
+["IA Generativa","O que uma temperatura alta faz na geração de texto?","Deixa as respostas mais variadas e criativas","Deixa o modelo mais rápido","Esquenta a GPU","Deixa tudo determinístico","Temperatura baixa gera respostas mais previsíveis."],
+["IA Generativa","O que é a janela de contexto?","Quantidade máxima de texto que o modelo considera de uma vez","Tela do aplicativo","Tempo de resposta","Tamanho do modelo em disco","Inclui o prompt e a resposta."],
+["IA Generativa","O que é few-shot prompting?","Incluir exemplos no prompt para guiar o modelo","Treinar com poucos dados","Usar poucas GPUs","Responder em poucas palavras","Os exemplos mostram o formato esperado."],
+["IA Generativa","Qual tipo de modelo é comum na geração de imagens a partir de texto?","Modelos de difusão","Árvores de decisão","Regressão linear","Bancos relacionais","Eles partem de ruído e refinam até formar a imagem."],
+["Full Cycle","O que defende a ideia “you build it, you run it”?","O time que desenvolve também opera em produção","Só o suporte cuida do sistema","Ninguém testa","Só o gerente decide","Une desenvolvimento e operação no mesmo time."],
+["Full Cycle","O que é o Docker?","Plataforma para empacotar apps em containers","Um banco de dados","Um editor de código","Uma linguagem","O container leva a aplicação e suas dependências."],
+["Full Cycle","Para que serve o Kubernetes?","Orquestrar containers em escala","Escrever código Go","Versionar código","Editar imagens","Cuida de deploy, escala e recuperação."],
+["Full Cycle","O que significa CI/CD?","Integração e entrega contínuas","Código inteligente e dados","Cloud interna e deploy","Controle de infra","Automatiza testes, build e entrega."],
+["Full Cycle","Qual empresa criou a linguagem Go?","Google","Microsoft","Oracle","Apple","Go é conhecida por concorrência simples e binários rápidos."],
+["Full Cycle","O que é o Apache Kafka?","Plataforma de streaming de eventos","Um framework CSS","Um sistema operacional","Um navegador","Muito usada em arquiteturas orientadas a eventos."],
+["Full Cycle","O que caracteriza uma arquitetura de microsserviços?","Serviços pequenos e independentes","Um único bloco de código","Só front-end","Sem rede","Cada serviço pode ser implantado separadamente."],
+["Full Cycle","O que significa DDD?","Domain-Driven Design","Data Driven Deploy","Dynamic Docker Design","Deep Data Delivery","Modela o software a partir do domínio do negócio."],
+["Full Cycle","Quais são os 3 pilares da observabilidade?","Métricas, logs e traces","CPU, RAM e disco","Build, test e deploy","Front, back e banco","Ajudam a entender o que acontece em produção."],
+["Full Cycle","O que é um Dockerfile?","Receita para construir uma imagem Docker","Um log de erros","Um banco de dados","Um cluster","Lista as instruções de build da imagem."],
+["Full Cycle","Qual a ideia central da Clean Architecture?","Isolar regras de negócio de frameworks e banco","Usar só um arquivo","Evitar testes","Colocar tudo no front","As dependências apontam para o domínio."],
+["Full Cycle","O que é o gRPC?","Framework de chamadas remotas de alto desempenho","Um banco NoSQL","Um editor","Um navegador","Usa HTTP/2 e Protocol Buffers."]
+];
+const $=id=>document.getElementById(id),N=10,CIRC=163.4,SECS=["start","game","end","board"],EMO={"Geral":"🌐","Full Stack":"💻","IA Generativa":"🤖","Full Cycle":"🚀"};
+let set,i,score,hits,streak,best,left,tot,timer,locked,db,uid,canAdmin=false,prev="start",record=0,unsub=null,p50,pT,res,lastC,muted=false,ac;
+const sh=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.random()*(k+1)|0;[a[k],a[j]]=[a[j],a[k]]}return a};
+const show=id=>SECS.forEach(s=>$(s).classList.toggle("hidden",s!==id));
+try{record=+localStorage.getItem("qt_rec")||0;$("nick").value=localStorage.getItem("qt_nick")||"";muted=localStorage.getItem("qt_mute")==="1"}catch(e){}
+$("snd").textContent=muted?"🔇":"🔊";
+$("snd").onclick=()=>{muted=!muted;$("snd").textContent=muted?"🔇":"🔊";try{localStorage.setItem("qt_mute",muted?"1":"0")}catch(e){}};
+function paintBest(){$("best").textContent=record?"Seu recorde neste aparelho: "+record+" pontos":""}paintBest();
+function beep(f,d,t,v,dl){if(muted)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain(),s=ac.currentTime+(dl||0);o.type=t||"square";o.frequency.value=f;g.gain.setValueAtTime(v||.05,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d)}catch(e){}}
+const sfx={ok(){beep(660,.12);beep(880,.2,"square",.05,.1)},bad(){beep(160,.3,"sawtooth",.06)},tick(){beep(520,.07)},go(){beep(880,.3)},win(){[523,659,784,1046].forEach((f,n)=>beep(f,.2,"square",.05,n*.12))}};
+function burst(el,col){const r=el.getBoundingClientRect(),f=$("fx");for(let k=0;k<18;k++){const s=document.createElement("s"),a=Math.random()*6.28,d=50+Math.random()*80;s.style.cssText="left:"+(r.left+r.width/2)+"px;top:"+(r.top+r.height/2)+"px;background:"+col+";--dx:"+Math.cos(a)*d+"px;--dy:"+Math.sin(a)*d+"px";f.appendChild(s);setTimeout(()=>s.remove(),750)}}
+function floater(el,txt){const r=el.getBoundingClientRect(),e=document.createElement("em");e.textContent=txt;e.style.left=(r.left+r.width/2)+"px";e.style.top=r.top+"px";$("fx").appendChild(e);setTimeout(()=>e.remove(),1000)}
+
+(async()=>{try{
+  const t=new Promise(r=>setTimeout(()=>r(null),10000));
+  const u=await Promise.race([window.claude.use("user"),t]);
+  db=await Promise.race([window.claude.use("db"),t]);
+  if(u){uid=await u.id();canAdmin=await u.canEdit()}
+}catch(e){db=null}})();
+
+function pickSet(){const by={};Q.forEach(q=>(by[q[0]]=by[q[0]]||[]).push(q));const out=[];sh(Object.keys(by)).forEach((c,n)=>out.push(...sh(by[c]).slice(0,n<2?3:2)));return sh(out).slice(0,N)}
+function start(){
+  const nm=$("nick").value.trim();
+  if(!nm){$("nick").focus();$("nick").placeholder="Digite um apelido para jogar";return}
+  try{localStorage.setItem("qt_nick",nm)}catch(e){}
+  set=pickSet();i=0;score=0;hits=0;streak=0;best=0;p50=false;pT=false;res=[];
+  const o=$("cd");o.classList.remove("hidden");let n=3;
+  const step=()=>{o.textContent=n>0?n:"VAI!";o.classList.remove("pop");void o.offsetWidth;o.classList.add("pop");n>0?sfx.tick():sfx.go();if(n-->0)setTimeout(step,750);else setTimeout(()=>{o.classList.add("hidden");show("game");ask()},650)};
+  step();
+}
+const mult=()=>1+Math.min(2,Math.floor(streak/3));
+function hud(){$("prog").textContent="FASE "+(i+1)+"/"+N;$("score").textContent=score;$("combo").textContent=streak>=2?"🔥 "+streak+(mult()>1?"  x"+mult():""):"";$("combo").classList.toggle("hidden",streak<2);
+  $("seg").innerHTML=set.map((_,n)=>'<i class="'+(res[n]||(n===i?"cur":""))+'"></i>').join("")}
+function ask(){
+  const [cat,q,ok,a,b,c]=set[i];locked=false;hud();
+  $("cat").textContent=EMO[cat]+" "+cat;$("q").textContent=q;
+  $("fb").classList.add("hidden");$("next").classList.add("hidden");$("p50").disabled=p50;$("pT").disabled=pT;
+  const box=$("opts");box.innerHTML="";
+  sh([ok,a,b,c]).forEach((t,n)=>{const el=document.createElement("button");el.className="opt";el.dataset.t=t;el.innerHTML="<b>"+"ABCD"[n]+"</b><span></span>";el.lastChild.textContent=t;el.onclick=()=>pick(t);box.appendChild(el)});
+  left=20;tot=20;lastC=99;tick();clearInterval(timer);
+  timer=setInterval(()=>{left-=.1;tick();if(left<=5&&left>0&&Math.ceil(left)!==lastC){lastC=Math.ceil(left);sfx.tick()}if(left<=0)pick(null)},100);
+}
+function tick(){const l=Math.max(left,0);$("ring").style.strokeDashoffset=CIRC*(1-l/tot);$("tnum").textContent=Math.ceil(l);$("tm").classList.toggle("low",l<=5)}
+function pick(t){
+  if(locked)return;locked=true;clearInterval(timer);
+  const ok=set[i][2],why=set[i][6],right=t===ok;let sel=null;
+  document.querySelectorAll(".opt").forEach(el=>{el.disabled=true;if(el.dataset.t===ok)el.classList.add("ok");if(el.dataset.t===t){sel=el;if(!right)el.classList.add("bad")}});
+  let msg;
+  if(right){hits++;streak++;best=Math.max(best,streak);const g=Math.round((100+Math.round(Math.min(left,20)/20*50))*mult());score+=g;msg="Acertou! +"+g+(mult()>1?" (combo x"+mult()+")":"");res[i]="ok";sfx.ok();burst(sel,"#3ee6a8");floater(sel,"+"+g)}
+  else{streak=0;msg=t===null?"Tempo esgotado!":"Errou!";res[i]="bad";sfx.bad();$("q").classList.remove("shake");void $("q").offsetWidth;$("q").classList.add("shake")}
+  hud();
+  $("fb").className="fb "+(right?"ok":"bad");$("fb").innerHTML="<strong></strong><span></span>";$("fb").firstChild.textContent=msg;$("fb").lastChild.textContent=why;
+  $("next").textContent=i===N-1?"VER RESULTADO":"PRÓXIMA";$("next").classList.remove("hidden");$("next").focus();
+}
+$("p50").onclick=()=>{if(locked||p50)return;p50=true;$("p50").disabled=true;sh([...document.querySelectorAll(".opt")].filter(e=>e.dataset.t!==set[i][2])).slice(0,2).forEach(e=>{e.disabled=true;e.classList.add("off")});sfx.tick()};
+$("pT").onclick=()=>{if(locked||pT)return;pT=true;$("pT").disabled=true;left+=10;tot=Math.max(tot,left);tick();sfx.go()};
+function next(){if(i===N-1)finish();else{i++;ask()}}
+async function finish(){
+  if(score>record){record=score;try{localStorage.setItem("qt_rec",record)}catch(e){}}
+  const st=hits>=9?3:hits>=6?2:hits>=3?1:0;
+  $("stars").textContent="★".repeat(st)+"☆".repeat(3-st);
+  $("rank").textContent=hits>=9?"LENDA TECH":hits>=7?"MESTRE TECH":hits>=4?"EM EVOLUÇÃO":"INICIANTE";
+  $("hits").textContent=hits+"/"+N;$("streak").textContent=best;$("record").textContent=record;$("saved").textContent="";paintBest();show("end");sfx.win();
+  const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/900);$("final").textContent=Math.round(score*k);if(k<1)requestAnimationFrame(f)})(t0);
+  if(!db||!uid){$("saved").textContent="Não foi possível conectar ao ranking compartilhado.";return}
+  try{const ref=db.doc("ranking/"+uid),s=await ref.get(),old=s.exists?(s.data().score||0):-1;
+    if(score>old){await ref.set({name:$("nick").value.trim().slice(0,20),score,hits,t:Date.now()});$("saved").textContent="Pontuação enviada ao ranking!"}
+    else $("saved").textContent="Sua melhor pontuação no ranking continua sendo "+old+".";
+  }catch(e){$("saved").textContent="Sua conta só pode ler o ranking. Peça acesso de colaborador ao organizador para pontuar."}
+}
+function openBoard(from){
+  prev=from;show("board");
+  if(!db){$("bnote").textContent="Ranking indisponível nesta visualização.";return}
+  if(unsub)unsub();
+  unsub=db.collection("ranking").orderBy("score","desc").limit(50).onSnapshot(snap=>{
+    const box=$("list");box.innerHTML="";let n=0;
+    snap.forEach(d=>{n++;const v=d.data(),row=document.createElement("div");row.className="row"+(d.id===uid?" me":"");
+      const p=document.createElement("span"),nm=document.createElement("span"),pt=document.createElement("span");
+      p.className="pos";p.textContent=n<=3?["🥇","🥈","🥉"][n-1]:n;nm.className="nm";nm.textContent=v.name||"Sem nome";pt.className="pt";pt.textContent=v.score;
+      row.append(p,nm,pt);
+      if(canAdmin){const x=document.createElement("button");x.textContent="×";x.title="Remover do ranking";x.onclick=()=>db.doc("ranking/"+d.id).delete();row.append(x)}
+      box.appendChild(row)});
+    $("bnote").textContent=n?"Melhor pontuação de cada jogador (top 50).":"Ninguém pontuou ainda. Seja o primeiro!";
+  },()=>{$("bnote").textContent="Não foi possível carregar o ranking."});
+}
+$("go").onclick=start;$("again").onclick=()=>show("start");$("next").onclick=next;
+$("rk1").onclick=()=>openBoard("start");$("rk2").onclick=()=>openBoard("end");
+$("back").onclick=()=>{if(unsub){unsub();unsub=null}show(prev)};
+document.addEventListener("keydown",e=>{if($("game").classList.contains("hidden")||locked)return;const n=+e.key;if(n>=1&&n<=4){const el=$("opts").children[n-1];if(el&&!el.disabled)el.click()}});
+</script>
+</body>
+</html>
