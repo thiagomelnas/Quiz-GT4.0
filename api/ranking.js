@@ -1,5 +1,5 @@
-const U = process.env.UPSTASH_REDIS_REST_URL;
-const K = process.env.UPSTASH_REDIS_REST_TOKEN;
+const U = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+const K = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
 
 const redis = async (cmd) => {
   const r = await fetch(U, {
