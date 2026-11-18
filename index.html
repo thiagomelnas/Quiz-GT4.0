@@ -82,12 +82,21 @@ input{width:100%;font:600 18px Poppins,sans-serif;padding:14px 16px;border-radiu
 #fx em{position:fixed;font:400 26px Bungee;font-style:normal;color:var(--gold);text-shadow:0 3px 0 #8a6a10;transform:translateX(-50%);animation:fl 1s forwards}
 @keyframes fl{to{transform:translate(-50%,-70px);opacity:0}}
 @media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
+#out{background:var(--navy2);border:2px solid var(--line);color:var(--ink);border-radius:12px;font:600 13px Poppins,sans-serif;padding:7px 11px;cursor:pointer;margin-right:6px}
 </style>
 </head>
 <body>
-<header class="brand"><div><b>Geração Tech<small>4.0</small></b><button id="snd" aria-label="Som">🔊</button></div></header>
+<header class="brand"><div><b>Geração Tech<small>4.0</small></b><span><button id="out" class="hidden">Sair</button><button id="snd" aria-label="Som">🔊</button></span></div></header>
 <main>
-  <section id="start" class="stack">
+  <section id="login" class="stack">
+    <div class="logo">QUIZ<br>TECH</div>
+    <p class="muted">Entre com a sua conta Google para participar da competição e aparecer no ranking.</p>
+    <div id="gbtn" style="min-height:44px"></div>
+    <p class="note" id="lerr"></p>
+    <p class="note"><a href="/privacidade.html" style="color:var(--mint)">Política de privacidade</a></p>
+  </section>
+
+  <section id="start" class="stack hidden">
     <div class="logo">QUIZ<br>TECH</div>
     <p class="muted">Enfrente 10 fases de tecnologia, ganhe combos e suba no ranking. Cada fase vale até 150 pontos, e acertar em sequência multiplica o resultado.</p>
     <div class="chips"><span>🌐 Geral</span><span>💻 Full Stack</span><span>🤖 IA Generativa</span><span>🚀 Full Cycle</span></div>
@@ -223,7 +232,7 @@ const Q=[
 ["Full Cycle", "O que é um health check em uma aplicação?", "Verificação do estado do serviço", "Rotina que apaga dados antigos do banco", "Teste de carga feito antes da entrega", "Relatório mensal de custos da nuvem", "O Kubernetes usa essas verificações para reiniciar serviços."],
 ["Full Cycle", "Para que serve um load balancer?", "Distribuir requisições entre várias instâncias", "Comprimir imagens antes de enviá-las ao cliente", "Criptografar o banco de dados do servidor", "Guardar o histórico de versões do código", "Evita sobrecarregar um único servidor."]
 ];
-const $=id=>document.getElementById(id),N=10,CIRC=163.4,SECS=["start","game","end","board"],EMO={"Geral":"🌐","Full Stack":"💻","IA Generativa":"🤖","Full Cycle":"🚀"};
+const $=id=>document.getElementById(id),N=10,CIRC=163.4,SECS=["login","start","game","end","board"],EMO={"Geral":"🌐","Full Stack":"💻","IA Generativa":"🤖","Full Cycle":"🚀"};
 let set,i,score,hits,streak,best,left,tot,timer,locked,db,uid,canAdmin=false,prev="start",record=0,unsub=null,p50,pT,res,lastC,muted=false,ac;
 const sh=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.random()*(k+1)|0;[a[k],a[j]]=[a[j],a[k]]}return a};
 const show=id=>SECS.forEach(s=>$(s).classList.toggle("hidden",s!==id));
@@ -281,7 +290,11 @@ async function finish(){
   $("rank").textContent=hits>=9?"LENDA TECH":hits>=7?"MESTRE TECH":hits>=4?"EM EVOLUÇÃO":"INICIANTE";
   $("hits").textContent=hits+"/"+N;$("streak").textContent=best;$("record").textContent=record;$("saved").textContent="";paintBest();show("end");sfx.win();
   const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/900);$("final").textContent=Math.round(score*k);if(k<1)requestAnimationFrame(f)})(t0);
-  try{const r=await fetch("/api/ranking",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("nick").value.trim().slice(0,20),score})});
+  await save();
+}
+async function save(){
+  try{const r=await fetch("/api/ranking",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:TOKEN,name:$("nick").value.trim().slice(0,20),score})});
+    if(r.status===401){TOKEN=null;pend=true;try{sessionStorage.removeItem("qt_tok")}catch(e){}$("out").classList.add("hidden");$("lerr").textContent="Sua sessão expirou. Entre de novo para salvar a pontuação.";show("login");return}
     $("saved").textContent=r.ok?"Pontuação enviada ao ranking! Vale a sua melhor pontuação.":"Não foi possível salvar no ranking."}
   catch(e){$("saved").textContent="Sem conexão: não foi possível salvar no ranking."}
 }
@@ -296,10 +309,28 @@ async function loadBoard(){
   }catch(e){$("bnote").textContent="Não foi possível carregar o ranking."}
 }
 function openBoard(from){prev=from;show("board");loadBoard();clearInterval(poll);poll=setInterval(loadBoard,10000)}
+let TOKEN=null,pend=false,CID=null;
+const jwt=t=>{try{const b=t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/");return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b),c=>c.charCodeAt(0))))}catch(e){return null}};
+function enter(t){TOKEN=t;try{sessionStorage.setItem("qt_tok",t)}catch(e){}const p=jwt(t)||{};
+  if(!$("nick").value.trim())$("nick").value=(p.given_name||p.name||"").slice(0,20);
+  $("out").classList.remove("hidden");$("lerr").textContent="";
+  if(pend){pend=false;show("end");save()}else show("start")}
+function logout(){TOKEN=null;try{sessionStorage.removeItem("qt_tok")}catch(e){}$("out").classList.add("hidden");try{google.accounts.id.disableAutoSelect()}catch(e){}show("login")}
+async function initG(){
+  try{
+    if(!CID){const r=await fetch("/api/ranking?config=1");CID=(await r.json()).clientId}
+    if(!CID){$("lerr").textContent="Login não configurado: falta definir GOOGLE_CLIENT_ID na Vercel.";return}
+    google.accounts.id.initialize({client_id:CID,callback:r=>enter(r.credential)});
+    google.accounts.id.renderButton($("gbtn"),{theme:"filled_blue",size:"large",shape:"pill",text:"signin_with",locale:"pt-BR"});
+  }catch(e){$("lerr").textContent="Não foi possível carregar o login do Google. Recarregue a página."}
+}
+$("out").onclick=logout;
+(function(){let t=null;try{t=sessionStorage.getItem("qt_tok")}catch(e){}const p=t&&jwt(t);if(p&&p.exp*1000>Date.now()+120000)enter(t)})();
 $("go").onclick=start;$("again").onclick=()=>show("start");$("next").onclick=next;
 $("rk1").onclick=()=>openBoard("start");$("rk2").onclick=()=>openBoard("end");
 $("back").onclick=()=>{clearInterval(poll);show(prev)};
 document.addEventListener("keydown",e=>{if($("game").classList.contains("hidden")||locked)return;const n=+e.key;if(n>=1&&n<=4){const el=$("opts").children[n-1];if(el&&!el.disabled)el.click()}});
 </script>
+<script src="https://accounts.google.com/gsi/client" async defer onload="initG()"></script>
 </body>
 </html>
