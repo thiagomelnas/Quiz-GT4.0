@@ -83,6 +83,8 @@ input{width:100%;font:600 18px Poppins,sans-serif;padding:14px 16px;border-radiu
 @keyframes fl{to{transform:translate(-50%,-70px);opacity:0}}
 @media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
 #out{background:var(--navy2);border:2px solid var(--line);color:var(--ink);border-radius:12px;font:600 13px Poppins,sans-serif;padding:7px 11px;cursor:pointer;margin-right:6px}
+.chips button{background:var(--navy2);border:2px solid var(--line);color:var(--ink);border-radius:99px;padding:6px 14px;font:600 14px Poppins,sans-serif;cursor:pointer}
+.chips button.on{background:var(--mint);color:#0a1252;border-color:var(--mint)}
 </style>
 </head>
 <body>
@@ -99,7 +101,8 @@ input{width:100%;font:600 18px Poppins,sans-serif;padding:14px 16px;border-radiu
   <section id="start" class="stack hidden">
     <div class="logo">QUIZ<br>TECH</div>
     <p class="muted">Enfrente 10 fases de tecnologia, ganhe combos e suba no ranking. Cada fase vale até 150 pontos, e acertar em sequência multiplica o resultado.</p>
-    <div class="chips"><span>🌐 Geral</span><span>💻 Full Stack</span><span>🤖 IA Generativa</span><span>🚀 Full Cycle</span></div>
+    <p class="note" style="margin-bottom:-6px">Escolha a área:</p>
+    <div class="chips" id="modes"><button data-m="misto">🎲 Misto</button><button data-m="geral">🌐 Geral</button><button data-m="fullstack">💻 Full Stack</button><button data-m="ia">🤖 IA Generativa</button><button data-m="fullcycle">🚀 Full Cycle</button></div>
     <input id="nick" maxlength="20" placeholder="Seu apelido de jogador" autocomplete="nickname">
     <button class="btn pulse" id="go">JOGAR</button>
     <button class="btn ghost" id="rk1">🏆 Ver ranking</button>
@@ -135,6 +138,7 @@ input{width:100%;font:600 18px Poppins,sans-serif;padding:14px 16px;border-radiu
   <section id="board" class="hidden">
     <h2 style="font-size:32px;color:var(--mint)">Ranking</h2>
     <p class="note" id="bnote" style="margin-top:8px">Carregando...</p>
+    <div class="chips" id="bmodes" style="margin:12px 0"></div>
     <div id="list"></div>
     <button class="btn ghost" id="back">Voltar</button>
   </section>
@@ -230,7 +234,67 @@ const Q=[
 ["Full Cycle", "O que é infraestrutura como código (IaC)?", "Definir a infraestrutura em arquivos versionados", "Instalar servidores manualmente seguindo manuais", "Converter código antigo para linguagens novas", "Escrever apenas código que roda em nuvem pública", "Terraform é uma ferramenta muito usada para isso."],
 ["Full Cycle", "Qual ferramenta é muito usada para coletar métricas?", "Prometheus", "Terraform", "Photoshop", "Wireshark", "Costuma ser combinada com o Grafana para criar painéis."],
 ["Full Cycle", "O que é um health check em uma aplicação?", "Verificação do estado do serviço", "Rotina que apaga dados antigos do banco", "Teste de carga feito antes da entrega", "Relatório mensal de custos da nuvem", "O Kubernetes usa essas verificações para reiniciar serviços."],
-["Full Cycle", "Para que serve um load balancer?", "Distribuir requisições entre várias instâncias", "Comprimir imagens antes de enviá-las ao cliente", "Criptografar o banco de dados do servidor", "Guardar o histórico de versões do código", "Evita sobrecarregar um único servidor."]
+["Full Cycle", "Para que serve um load balancer?", "Distribuir requisições entre várias instâncias", "Comprimir imagens antes de enviá-las ao cliente", "Criptografar o banco de dados do servidor", "Guardar o histórico de versões do código", "Evita sobrecarregar um único servidor."],
+["Geral", "Qual destes é um sistema operacional?", "Windows", "Photoshop", "Spotify", "WhatsApp", "Ele gerencia o hardware e roda os programas."],
+["Geral", "O que é um endereço IP?", "Número que identifica um aparelho na rede", "Senha usada para entrar no roteador de casa", "Nome do provedor de internet contratado", "Velocidade máxima da conexão em Mbps", "Cada aparelho conectado recebe um endereço."],
+["Geral", "O que é um backup?", "Cópia de segurança dos seus arquivos", "Programa que apaga arquivos duplicados", "Atualização que melhora a velocidade do PC", "Senha guardada em um gerenciador de contas", "Protege contra perda por falha ou ataque."],
+["Geral", "Qual unidade mede a capacidade de armazenamento?", "Gigabyte (GB)", "Gigahertz (GHz)", "Megapixel (MP)", "Decibel (dB)", "GHz mede velocidade de clock, não espaço."],
+["Geral", "O que é um ransomware?", "Vírus que sequestra arquivos e pede resgate", "Programa que acelera a conexão de rede local", "Site falso que imita a página de um banco", "Antivírus gratuito para pequenas empresas", "Ele criptografa os dados da vítima."],
+["Geral", "Para que serve uma VPN?", "Criar uma conexão privada e criptografada", "Aumentar a velocidade do processador", "Limpar arquivos temporários do sistema", "Bloquear anúncios em todos os aplicativos", "Protege o tráfego em redes públicas."],
+["Geral", "Qual é a função do sistema operacional?", "Gerenciar o hardware e os programas", "Proteger o computador só contra vírus", "Conectar o computador ao provedor", "Criar documentos e planilhas", "Ele faz a ponte entre programas e máquina."],
+["Geral", "O que é a Internet das Coisas (IoT)?", "Objetos comuns conectados à internet", "Uma rede social criada só para empresas", "Um tipo de impressora 3D conectada à rede", "Sites que vendem apenas produtos físicos", "Exemplos: lâmpadas e relógios inteligentes."],
+["Geral", "O que significa a sigla LAN?", "Local Area Network", "Large Access Node", "Linked Address Network", "Long Area Navigation", "É uma rede local, como a de uma casa."],
+["Geral", "Qual cientista deu nome a um teste que avalia se uma máquina parece humana?", "Alan Turing", "Steve Jobs", "Bill Gates", "Mark Zuckerberg", "O teste de Turing é de 1950."],
+["Geral", "O que é um CAPTCHA?", "Teste para distinguir pessoas de robôs", "Código para acelerar a conexão do site", "Tipo de senha criada pelo navegador", "Certificado digital de um site seguro", "Pede, por exemplo, para identificar imagens."],
+["Geral", "O que é realidade aumentada?", "Sobrepõe elementos virtuais ao mundo real", "Cria um mundo totalmente virtual e isolado", "Aumenta a resolução de fotos muito antigas", "Amplia o sinal de Wi-Fi dentro de casa", "Exemplo: filtros de câmera no celular."],
+["Geral", "Qual é o principal objetivo de um antivírus?", "Detectar e remover programas maliciosos", "Aumentar a memória disponível no PC", "Fazer cópias de segurança automáticas", "Bloquear e-mails de pessoas desconhecidas", "Ele busca ameaças em arquivos e programas."],
+["Geral", "O que é um data center?", "Prédio com servidores que armazenam dados", "Programa que organiza dados em planilhas", "Aplicativo para criar gráficos e relatórios", "Rede de cabos que liga os computadores", "A nuvem funciona sobre data centers."],
+["Geral", "O que significa a sigla GPS?", "Global Positioning System", "General Positioning Service", "Global Planning Software", "Geographic Packet Signal", "Usa satélites para calcular a posição."],
+["Full Stack", "O que é o HTML?", "Linguagem de marcação que estrutura páginas", "Linguagem de estilo que define cores e fontes", "Banco de dados usado para guardar páginas", "Linguagem de programação para servidores web", "Define títulos, textos, links e imagens."],
+["Full Stack", "Qual comando Git baixa e integra mudanças do repositório remoto?", "git pull", "git commit", "git init", "git add", "git push faz o caminho contrário."],
+["Full Stack", "O que é uma requisição assíncrona em JavaScript?", "Executa sem travar o restante do código", "Roda apenas quando o navegador está fechado", "Só funciona com bancos de dados SQL", "Exige que a página seja recarregada", "Usa Promises, async e await."],
+["Full Stack", "O que significa a sigla SQL?", "Structured Query Language", "Standard Question Language", "Server Query Language", "Simple Query Logic", "É a linguagem de consulta de bancos relacionais."],
+["Full Stack", "O que é um framework?", "Estrutura pronta para desenvolver mais rápido", "Um tipo de banco de dados não relacional e rápido", "Um servidor gratuito para hospedar sites estáticos", "Um editor para escrever código visualmente", "Exemplos: Next.js, Django e Laravel."],
+["Full Stack", "Qual é o papel do back-end?", "Processar regras de negócio e acessar dados", "Definir a aparência das páginas no navegador", "Animar os elementos da interface do usuário", "Escolher as cores e fontes do site", "Ele roda no servidor."],
+["Full Stack", "O que faz o comando SQL INSERT?", "Adiciona um novo registro na tabela", "Remove registros antigos de uma tabela", "Altera os nomes das colunas da tabela", "Busca registros que atendem a um filtro", "DELETE remove e SELECT consulta."],
+["Full Stack", "Para que serve o Flexbox no CSS?", "Organizar e alinhar elementos em um layout", "Conectar a página a um banco de dados externo", "Criar animações de carregamento em 3D", "Validar formulários antes de enviar os dados", "Facilita layouts flexíveis e responsivos."],
+["Full Stack", "O que é o localStorage?", "Guarda dados no navegador do usuário", "Um banco de dados hospedado em um servidor", "Uma pasta de arquivos no repositório Git", "Um cache de imagens da rede de entrega", "Os dados ficam salvos mesmo após fechar a aba."],
+["Full Stack", "O que é autenticação?", "Confirmar a identidade do usuário", "Definir o que o usuário pode acessar", "Criptografar os dados enviados ao servidor", "Registrar os erros ocorridos no sistema", "Definir permissões é autorização."],
+["Full Stack", "O que significa o status HTTP 200?", "Requisição concluída com sucesso", "Recurso movido permanentemente", "Requisição inválida do cliente", "Servidor temporariamente indisponível", "É a resposta padrão de sucesso."],
+["Full Stack", "O que é um componente em React?", "Parte reutilizável da interface", "Tabela de um banco relacional", "Função que roda só no servidor", "Arquivo de configuração do projeto", "Telas são montadas combinando componentes."],
+["Full Stack", "O que é um ORM?", "Liga objetos do código às tabelas do banco", "Compila o código para rodar no navegador", "Cria gráficos a partir de dados de uma API", "Testa a segurança das senhas dos usuários", "Exemplos: Prisma, Hibernate e SQLAlchemy."],
+["Full Stack", "O que é o Tailwind CSS?", "Framework CSS baseado em classes utilitárias", "Biblioteca JavaScript para animações em 3D", "Banco de dados otimizado para guardar estilos", "Servidor que compila arquivos de estilo", "O estilo é aplicado direto nas classes do HTML."],
+["Full Stack", "O que é um cookie no navegador?", "Pequeno arquivo com dados guardados pelo site", "Programa que bloqueia anúncios em qualquer site", "Atalho para as páginas mais visitadas do usuário", "Registro de erros enviado ao servidor web", "Muito usado para manter a sessão de login."],
+["IA Generativa", "O que é aprendizado de máquina (machine learning)?", "Modelos que aprendem padrões a partir de dados", "Programas que só seguem regras escritas à mão", "Equipamentos que fazem cópias de segurança de dados", "Redes que conectam os servidores de IA", "A IA generativa é uma área do aprendizado de máquina."],
+["IA Generativa", "O que é uma rede neural artificial?", "Modelo inspirado na organização do cérebro", "Rede física de cabos entre os servidores", "Banco de dados que guarda todas as conversas", "Programa que bloqueia ataques virtuais", "É formada por camadas de neurônios artificiais."],
+["IA Generativa", "O que são os parâmetros de um modelo de linguagem?", "Valores numéricos ajustados durante o treino", "Comandos digitados pelo usuário no chat", "Limites de uso definidos pelo provedor do modelo", "Idiomas que o modelo consegue falar", "Modelos grandes têm bilhões deles."],
+["IA Generativa", "O que é inferência em IA?", "Usar um modelo treinado para gerar respostas", "Treinar o modelo com um novo conjunto de dados", "Calcular quanto espaço o modelo ocupa no disco", "Corrigir os erros presentes nos dados de treino", "É o momento em que o modelo é usado."],
+["IA Generativa", "O que é overfitting?", "Modelo que decora o treino e generaliza mal", "Modelo que responde sempre com o mesmo texto", "Modelo que ocupa pouca memória e roda rápido", "Modelo treinado com dados de várias línguas", "Ele vai bem no treino, mas mal em dados novos."],
+["IA Generativa", "O que é um system prompt?", "Instrução inicial que orienta o modelo", "Mensagem de erro exibida pelo sistema", "Comando para reiniciar o servidor do modelo", "Lista de usuários autorizados do chat", "Define papel, tom e regras do assistente."],
+["IA Generativa", "Qual é a função de um tokenizador?", "Converter texto em tokens para o modelo", "Criptografar as mensagens enviadas ao chat", "Contar quantos usuários usam o modelo", "Traduzir o texto para outros idiomas", "O modelo trabalha com tokens, não com letras."],
+["IA Generativa", "O que significa um modelo ser open-weight?", "Pesos do modelo disponíveis para download", "Roda em qualquer computador sem placa de vídeo", "É gratuito apenas para uso acadêmico", "Foi treinado sem dados de terceiros", "Isso permite rodar o modelo em infraestrutura própria."],
+["IA Generativa", "O que é a técnica chain of thought?", "Pedir ao modelo um raciocínio em etapas", "Encadear vários bancos de dados em série", "Conectar várias GPUs em uma mesma rede", "Repetir o prompt várias vezes seguidas", "Ajuda em problemas de lógica e matemática."],
+["IA Generativa", "O que é um deepfake?", "Mídia falsa criada com IA que imita pessoas", "Ataque que derruba um site com acessos falsos", "Erro de compressão em vídeos de baixa qualidade", "Filtro de rede que oculta o endereço IP", "Pode imitar rosto e voz de pessoas reais."],
+["IA Generativa", "O que são guardrails em sistemas de IA?", "Regras que limitam respostas inadequadas", "Cabos que ligam as GPUs do servidor", "Ferramentas que aceleram o treinamento", "Backups automáticos do histórico do chat", "Elas ajudam a manter o uso seguro."],
+["IA Generativa", "O que é um modelo de linguagem pequeno (SLM)?", "Modelo compacto que roda em aparelhos locais", "Modelo que só entende frases curtas e simples", "Modelo treinado com apenas uma língua", "Modelo antigo, sem redes neurais", "Usa menos memória e energia que os grandes."],
+["IA Generativa", "O que é o MCP (Model Context Protocol)?", "Padrão para ligar modelos a ferramentas", "Protocolo de compressão de modelos de IA", "Método para treinar modelos com menos GPUs", "Padrão de segurança para senhas de usuários", "Permite que assistentes usem ferramentas externas."],
+["IA Generativa", "O que é um benchmark em IA?", "Teste padronizado para comparar modelos", "Tipo de GPU usada no treinamento de IA", "Banco de dados de prompts mais populares", "Método para reduzir custos do modelo", "Mede desempenho em tarefas definidas."],
+["IA Generativa", "Qual prática ajuda a verificar respostas de uma IA?", "Conferir as informações em fontes seguras", "Pedir ao modelo que repita a mesma resposta", "Aumentar a temperatura do modelo ao máximo", "Usar sempre a primeira resposta recebida", "Modelos podem errar mesmo soando seguros."],
+["Full Cycle", "O que é DevOps?", "Cultura que une desenvolvimento e operações", "Linguagem para escrever scripts de servidor", "Ferramenta para testar telas do sistema", "Cargo exclusivo de gerente de projetos", "Busca entregas mais rápidas e confiáveis."],
+["Full Cycle", "O que é um container?", "Ambiente isolado que empacota o aplicativo", "Máquina virtual completa com sistema próprio", "Pasta compartilhada entre vários servidores", "Arquivo que guarda o histórico de versões", "É mais leve que uma máquina virtual."],
+["Full Cycle", "O que faz um reverse proxy, como o Nginx?", "Recebe as requisições e repassa aos serviços", "Programa que traduz código para binário", "Serviço que guarda cópias dos bancos de dados", "Ferramenta que gera relatórios de desempenho", "Também pode balancear carga e cuidar do HTTPS."],
+["Full Cycle", "O que significa a sigla SLA?", "Service Level Agreement", "Software Load Analysis", "System Logging Architecture", "Secure Link Access", "É o acordo de nível de serviço, como 99,9% de uptime."],
+["Full Cycle", "O que é escalabilidade horizontal?", "Adicionar mais instâncias para a carga", "Aumentar a memória de um único servidor", "Dividir o código do projeto em mais arquivos", "Trocar o banco de dados por um mais moderno", "Aumentar a máquina é escalar na vertical."],
+["Full Cycle", "O que é um pipeline de CI/CD?", "Etapas automáticas de build, teste e deploy", "Cano de dados entre dois bancos relacionais", "Lista manual de tarefas da equipe de suporte", "Fila de mensagens entre dois microsserviços", "Cada mudança de código passa por ele."],
+["Full Cycle", "Qual é a função de um Service no Kubernetes?", "Dar um endereço estável para acessar os pods", "Guardar as imagens Docker usadas no projeto", "Compilar o código-fonte antes de cada deploy", "Monitorar o uso de CPU em cada nó do cluster", "Os pods mudam, mas o Service permanece."],
+["Full Cycle", "O que é um rollback?", "Voltar para uma versão anterior estável", "Aumentar o número de réplicas do serviço", "Copiar o banco de dados para outra região", "Atualizar todas as dependências do projeto", "Usado quando um deploy causa problemas."],
+["Full Cycle", "O que é o padrão Saga em microsserviços?", "Coordenar transações distribuídas por etapas", "Dividir o front-end em vários repositórios Git", "Escrever logs em um formato padronizado", "Replicar o cache entre todos os serviços", "Cada etapa tem uma ação de compensação."],
+["Full Cycle", "O que é o CQRS?", "Separar operações de leitura e de escrita", "Compactar requisições antes de enviá-las", "Criptografar consultas a bancos de dados", "Replicar serviços em várias regiões do mundo", "É Command Query Responsibility Segregation."],
+["Full Cycle", "Para que serve o Grafana?", "Montar painéis para ver métricas e logs", "Orquestrar containers em um grande cluster", "Armazenar mensagens em filas duráveis", "Versionar código-fonte de forma distribuída", "Costuma usar o Prometheus como fonte de dados."],
+["Full Cycle", "O que é um circuit breaker?", "Para chamadas a um serviço que está falhando", "Reinicia automaticamente o servidor de banco", "Criptografa a comunicação entre serviços", "Limita o tamanho dos arquivos enviados", "Evita falhas em cadeia entre serviços."],
+["Full Cycle", "O que é um registry de imagens, como o Docker Hub?", "Repositório para guardar e baixar imagens", "Painel que mostra os logs dos containers", "Serviço que cria máquinas virtuais", "Ferramenta que compila e testa código em Go", "As imagens são enviadas com docker push."],
+["Full Cycle", "O que é logging estruturado?", "Logs em formato padronizado, como JSON", "Logs escritos à mão pelo time de suporte", "Logs guardados apenas em arquivos de texto", "Logs criptografados com a senha do usuário", "Facilita buscar e analisar os registros."],
+["Full Cycle", "O que é um ambiente de staging?", "Cópia próxima da produção para testar mudanças", "Servidor usado apenas pela equipe comercial", "Backup que fica desligado até uma falha", "Ambiente de desenvolvimento no computador local", "Valida a entrega antes de ir ao ar."]
 ];
 const $=id=>document.getElementById(id),N=10,CIRC=163.4,SECS=["login","start","game","end","board"],EMO={"Geral":"🌐","Full Stack":"💻","IA Generativa":"🤖","Full Cycle":"🚀"};
 let set,i,score,hits,streak,best,left,tot,timer,locked,db,uid,canAdmin=false,prev="start",record=0,unsub=null,p50,pT,res,lastC,muted=false,ac;
@@ -246,7 +310,18 @@ function burst(el,col){const r=el.getBoundingClientRect(),f=$("fx");for(let k=0;
 function floater(el,txt){const r=el.getBoundingClientRect(),e=document.createElement("em");e.textContent=txt;e.style.left=(r.left+r.width/2)+"px";e.style.top=r.top+"px";$("fx").appendChild(e);setTimeout(()=>e.remove(),1000)}
 
 
-function pickSet(){const by={};Q.forEach(q=>(by[q[0]]=by[q[0]]||[]).push(q));const out=[];sh(Object.keys(by)).forEach((c,n)=>out.push(...sh(by[c]).slice(0,n<2?3:2)));return sh(out).slice(0,N)}
+const MODES={misto:null,geral:"Geral",fullstack:"Full Stack",ia:"IA Generativa",fullcycle:"Full Cycle"},MN={misto:"🎲 Misto",geral:"🌐 Geral",fullstack:"💻 Full Stack",ia:"🤖 IA",fullcycle:"🚀 Full Cycle"};
+let MODE="misto",BMODE="misto";
+try{const m=localStorage.getItem("qt_mode");if(m in MODES)MODE=m}catch(e){}
+function paintModes(){document.querySelectorAll("#modes button").forEach(b=>b.classList.toggle("on",b.dataset.m===MODE))}
+document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>{MODE=b.dataset.m;try{localStorage.setItem("qt_mode",MODE)}catch(e){}paintModes()});
+paintModes();
+function pickSet(){
+  if(MODE!=="misto")return sh(Q.filter(q=>q[0]===MODES[MODE])).slice(0,N);
+  const by={};Q.forEach(q=>(by[q[0]]=by[q[0]]||[]).push(q));const out=[];
+  sh(Object.keys(by)).forEach((c,n)=>out.push(...sh(by[c]).slice(0,n<2?3:2)));return sh(out).slice(0,N);
+}
+function paintBM(){const bx=$("bmodes");bx.innerHTML="";Object.keys(MN).forEach(k=>{const b=document.createElement("button");b.textContent=MN[k];b.className=k===BMODE?"on":"";b.onclick=()=>{BMODE=k;paintBM();loadBoard()};bx.appendChild(b)})}
 function start(){
   const nm=$("nick").value.trim();
   if(!nm){$("nick").focus();$("nick").placeholder="Digite um apelido para jogar";return}
@@ -293,14 +368,14 @@ async function finish(){
   await save();
 }
 async function save(){
-  try{const r=await fetch("/api/ranking",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:TOKEN,name:$("nick").value.trim().slice(0,20),score})});
+  try{const r=await fetch("/api/ranking",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:TOKEN,name:$("nick").value.trim().slice(0,20),score,mode:MODE})});
     if(r.status===401){TOKEN=null;pend=true;try{sessionStorage.removeItem("qt_tok")}catch(e){}$("out").classList.add("hidden");$("lerr").textContent="Sua sessão expirou. Entre de novo para salvar a pontuação.";show("login");return}
     $("saved").textContent=r.ok?"Pontuação enviada ao ranking! Vale a sua melhor pontuação.":"Não foi possível salvar no ranking."}
   catch(e){$("saved").textContent="Sem conexão: não foi possível salvar no ranking."}
 }
 let poll=null;
 async function loadBoard(){
-  try{const r=await fetch("/api/ranking",{cache:"no-store"});if(!r.ok)throw 0;const a=await r.json(),box=$("list"),me=($("nick").value||"").trim();box.innerHTML="";
+  try{const r=await fetch("/api/ranking?mode="+BMODE,{cache:"no-store"});if(!r.ok)throw 0;const a=await r.json(),box=$("list"),me=($("nick").value||"").trim();box.innerHTML="";
     a.forEach((v,n)=>{const row=document.createElement("div");row.className="row"+(v.name===me?" me":"");
       const p=document.createElement("span"),nm=document.createElement("span"),pt=document.createElement("span");
       p.className="pos";p.textContent=n<3?["🥇","🥈","🥉"][n]:n+1;nm.className="nm";nm.textContent=v.name;pt.className="pt";pt.textContent=v.score;
@@ -308,7 +383,7 @@ async function loadBoard(){
     $("bnote").textContent=a.length?"Melhor pontuação de cada apelido (top 50). Atualiza sozinho.":"Ninguém pontuou ainda. Seja o primeiro!";
   }catch(e){$("bnote").textContent="Não foi possível carregar o ranking."}
 }
-function openBoard(from){prev=from;show("board");loadBoard();clearInterval(poll);poll=setInterval(loadBoard,10000)}
+function openBoard(from){prev=from;show("board");BMODE=MODE;paintBM();loadBoard();clearInterval(poll);poll=setInterval(loadBoard,10000)}
 let TOKEN=null,pend=false,CID=null;
 const jwt=t=>{try{const b=t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/");return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b),c=>c.charCodeAt(0))))}catch(e){return null}};
 function enter(t){TOKEN=t;try{sessionStorage.setItem("qt_tok",t)}catch(e){}const p=jwt(t)||{};
