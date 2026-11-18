@@ -2,7 +2,7 @@ const crypto = require("crypto");
 
 const URL_ = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
 const TOKEN_ = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "492131479290-ek8575h7pg4ko5oj2b8k4flpk84iacs9.apps.googleusercontent.com";
 
 const redis = async (cmd) => {
   const r = await fetch(URL_, {
