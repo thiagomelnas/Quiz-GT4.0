@@ -4,6 +4,9 @@ const URL_ = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
 const TOKEN_ = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "492131479290-ek8575h7pg4ko5oj2b8k4flpk84iacs9.apps.googleusercontent.com";
 
+const MODES = ["misto", "geral", "fullstack", "ia", "fullcycle"];
+const keyOf = (m) => (MODES.includes(m) && m !== "misto" ? "ranking:g:" + m : "ranking:g");
+
 const redis = async (cmd) => {
   const r = await fetch(URL_, {
     method: "POST",
@@ -57,14 +60,14 @@ module.exports = async (req, res) => {
       if (!name || !(score >= 0 && score <= 3450)) {
         return res.status(400).json({ error: "invalid" });
       }
-      await redis(["ZADD", "ranking:g", "GT", String(score), user.sub]);
+      await redis(["ZADD", keyOf(b.mode), "GT", String(score), user.sub]);
       await redis(["HSET", "names:g", user.sub, name]);
       return res.json({ ok: true });
     }
     if (req.query && req.query.config) {
       return res.json({ clientId: CLIENT_ID || null });
     }
-    const a = await redis(["ZREVRANGE", "ranking:g", "0", "49", "WITHSCORES"]);
+    const a = await redis(["ZREVRANGE", keyOf(req.query && req.query.mode), "0", "49", "WITHSCORES"]);
     const ids = [], scores = [];
     for (let i = 0; i < a.length; i += 2) { ids.push(a[i]); scores.push(Number(a[i + 1])); }
     const names = ids.length ? await redis(["HMGET", "names:g", ...ids]) : [];
