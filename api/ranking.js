@@ -55,7 +55,8 @@ module.exports = async (req, res) => {
       const b = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
       const user = await verify(b.token);
       if (!user) return res.status(401).json({ error: "auth" });
-      const name = String(b.name || "").trim().slice(0, 20);
+      const first = (s) => String(s || "").trim().split(/\s+/)[0];
+      const name = (first(user.given_name) || first(user.name) || first(String(user.email || "").split("@")[0].split(/[._-]/)[0]) || "Jogador").slice(0, 20);
       const score = Math.floor(Number(b.score));
       if (!name || !(score >= 0 && score <= 3450)) {
         return res.status(400).json({ error: "invalid" });
