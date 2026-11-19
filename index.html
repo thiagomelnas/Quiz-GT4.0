@@ -120,6 +120,7 @@ input{width:100%;font:600 18px Poppins,sans-serif;padding:14px 16px;border-radiu
 @keyframes tw{50%{transform:scale(1.3) rotate(12deg)}}
 @keyframes tear{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(46px);opacity:0}}
 .nz .bub{display:none}
+input[readonly]{opacity:.9;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -138,7 +139,8 @@ input{width:100%;font:600 18px Poppins,sans-serif;padding:14px 16px;border-radiu
     <p class="muted">Enfrente 10 fases de tecnologia, ganhe combos e suba no ranking. Cada fase vale até 150 pontos, e acertar em sequência multiplica o resultado.</p>
     <p class="note" style="margin-bottom:-6px">Escolha a área:</p>
     <div class="chips" id="modes"><button data-m="misto">🎲 Misto</button><button data-m="geral">🌐 Geral</button><button data-m="fullstack">💻 Full Stack</button><button data-m="ia">🤖 IA Generativa</button><button data-m="fullcycle">🚀 Full Cycle</button></div>
-    <input id="nick" maxlength="20" placeholder="Seu apelido de jogador" autocomplete="nickname">
+    <input id="nick" maxlength="20" placeholder="Seu nome" autocomplete="off" readonly aria-label="Seu nome, vindo da conta Google">
+    <p class="note" style="margin-top:-6px">Seu nome vem da conta Google e não pode ser alterado.</p>
     <button class="btn pulse" id="go">JOGAR</button>
     <button class="btn ghost" id="rk1">🏆 Ver ranking</button>
     <p class="note" id="best"></p>
@@ -443,7 +445,7 @@ function openBoard(from){prev=from;show("board");BMODE=MODE;paintBM();loadBoard(
 let TOKEN=null,pend=false,CID=null;
 const jwt=t=>{try{const b=t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/");return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b),c=>c.charCodeAt(0))))}catch(e){return null}};
 function enter(t){TOKEN=t;try{sessionStorage.setItem("qt_tok",t)}catch(e){}const p=jwt(t)||{};
-  if(!$("nick").value.trim())$("nick").value=(p.given_name||p.name||"").slice(0,20);
+  $("nick").value=((p.given_name||p.name||(p.email||"").split("@")[0].split(/[._-]/)[0]||"").trim().split(/\s+/)[0]||"Jogador").slice(0,20);$("nick").readOnly=true;
   $("out").classList.remove("hidden");$("lerr").textContent="";
   if(pend){pend=false;show("end");save()}else show("start")}
 function logout(){TOKEN=null;try{sessionStorage.removeItem("qt_tok")}catch(e){}$("out").classList.add("hidden");try{google.accounts.id.disableAutoSelect()}catch(e){}show("login")}
